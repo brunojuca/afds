@@ -5,8 +5,8 @@ public class Principal {
 	
     public static void main(String[] args) {				
 	Principal t = new Principal();		
-       t.faca1("ababa");
-       //t.faca2();
+       //t.faca1("ababa");
+       t.faca2();
     }
 
     /**
@@ -34,7 +34,8 @@ public class Principal {
         try {
                a.ler("./test/AFN01.XML");
                System.out.println("AFN M = "+a);
-               System.out.println(("AFD M' = " + a.toAFD()).toString());
+               a.getAllWords(3);
+               //System.out.println(("AFD M' = " + a.toAFD()).toString());
         } catch (Exception e){
                System.out.println(e);
         }     

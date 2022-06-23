@@ -3,6 +3,7 @@ package afds;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.w3c.dom.Document;
@@ -568,5 +569,19 @@ public class AFN {
 			}
 		}
 	}
+        
+        public ArrayList<String> getAllWords(int size) {
+            
+            ArrayList<String> words = new ArrayList<String>();
+            
+            words.add("teste 1");
+            words.add("teste 2");
+            
+            for (String word : words) {
+                System.out.println(word);
+            }
+            
+            return words;
+        }
 
 }
