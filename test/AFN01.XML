@@ -17,6 +17,8 @@
 
    <funcaoPrograma>
        <elemento origem="q1"  destino="q2" simbolo="a"/>
+       <elemento origem="q1"  destino="q1" simbolo="a"/>
+       <elemento origem="q1"  destino="q2" simbolo="b"/>
        <elemento origem="q2"  destino="q1" simbolo="b"/>
        <elemento origem="q2"  destino="q3" simbolo="b"/>
        <elemento origem="q3"  destino="q1" simbolo="a"/>
