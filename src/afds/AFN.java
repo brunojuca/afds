@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -555,18 +556,66 @@ public class AFN {
         }
     }
 
-    public ArrayList<String> getAllWords(int size) {
-
-        ArrayList<String> words = new ArrayList<String>();
-
-        words.add("teste 1");
-        words.add("teste 2");
-
-        for (String word : words) {
-            System.out.println(word);
-        }
-
+    /**
+     * Gera todas as palavras aceitas pelo AFN de tamanho size
+     * 
+     * @param size tamanho das palavras a serem geradas
+     * 
+     * @return HashSet de strings contendo as palavras geradas
+     */
+    public HashSet<String> getAllWords(int size) {
+        HashSet<String> words = new HashSet<>();
+        
+        Estado inicial = getEstadoInicial();
+        
+        ConjuntoTransicaoN fp = getFuncaoPrograma();
+        
+        getAllWordsAux(inicial, size, "", words, fp); // inicio da recursão
+        
         return words;
+    }
+    
+    
+    /**
+     * Função auxiliar para geração de todas as palavras aceitas pelo AFN
+     * 
+     * @param origem estado de onde se está partindo
+     * @param size tamanho das palavras a serem geradas
+     * @param word palavra sendo analisada
+     * @param words set das palavras aceitas e de tamanho size
+     * @param fp conjunto de transicoes (funcao programa)
+     */
+    public void getAllWordsAux(Estado origem, int size, String word, HashSet<String> words, ConjuntoTransicaoN fp) {
+
+        TransicaoN t;
+        Estado e;
+        String newWord;
+        
+        
+        // loop por todas as transições existentes na linguagem
+        // procurando por aquelas que tenham a origem desejada
+        // e posteriormente iniciando novas recursões para cada
+        // um dos possiveis estados destinos.
+        for (Iterator fpIter = fp.getElementos().iterator(); fpIter.hasNext();) {
+            t = (TransicaoN) fpIter.next();
+            if (origem.igual(t.getOrigem())) {
+                newWord = word + t.getSimbolo();
+                for (Iterator tIter = t.getDestino().iterator(); tIter.hasNext();) {
+                    e = (Estado) tIter.next();
+                    
+                    if (newWord.length() > size) return;
+                    
+                    if (newWord.length() == size) {                       
+                        if (estadosFinais.pertence(e)) {
+                            // palavra no tamanho correto e estado final atingido
+                            words.add(newWord);
+                        }
+                        continue;
+                    }
+                    getAllWordsAux(e, size, newWord, words, fp);
+                }
+            }
+        }
     }
 
     public void printAllWords(int word_length) {
@@ -577,6 +626,8 @@ public class AFN {
             Simbolo s = (Simbolo) iter.next();
             printAllWords_aux(s, word_length, "", list_of_words);
         }
+        
+        System.out.println(list_of_words.size());
 
         for (Iterator iter = list_of_words.iterator(); iter.hasNext();) {
             String s = (String) iter.next();
