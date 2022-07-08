@@ -559,18 +559,30 @@ public class AFN {
     /**
      * Gera todas as palavras aceitas pelo AFN de tamanho size
      * 
+     * Caminha pelas transições e reconhece uma palavra quando ela
+     * possui o tamanho desejado e o caminhamento está num estado final
+     * 
      * @param size tamanho das palavras a serem geradas
+     * @param print booleano indicando se deseja printar as palavras
      * 
      * @return HashSet de strings contendo as palavras geradas
      */
-    public HashSet<String> getAllWords(int size) {
+    public HashSet<String> getAllWordsByTransition(int size, boolean print) {
+        
         HashSet<String> words = new HashSet<>();
         
         Estado inicial = getEstadoInicial();
         
         ConjuntoTransicaoN fp = getFuncaoPrograma();
         
-        getAllWordsAux(inicial, size, "", words, fp); // inicio da recursão
+        getAllWordsByTransitionAux(inicial, size, "", words, fp); // inicio da recursão
+        
+        if (print) {
+            System.out.println(words.size());
+            for (String word : words) {
+                System.out.println(word);
+            }
+        }
         
         return words;
     }
@@ -585,7 +597,7 @@ public class AFN {
      * @param words set das palavras aceitas e de tamanho size
      * @param fp conjunto de transicoes (funcao programa)
      */
-    public void getAllWordsAux(Estado origem, int size, String word, HashSet<String> words, ConjuntoTransicaoN fp) {
+    private void getAllWordsByTransitionAux(Estado origem, int size, String word, HashSet<String> words, ConjuntoTransicaoN fp) {
 
         TransicaoN t;
         Estado e;
@@ -612,46 +624,58 @@ public class AFN {
                         }
                         continue;
                     }
-                    getAllWordsAux(e, size, newWord, words, fp);
+                    getAllWordsByTransitionAux(e, size, newWord, words, fp);
                 }
             }
         }
     }
 
-    public void printAllWords(int word_length) {
-        List<String> list_of_words = new ArrayList<>();
+    /**
+     * Gera todas as palavras aceitas pelo AFN de tamanho size
+     * 
+     * Gera todas as possiveis palavras de acordo com o alfabeto e seleciona
+     * aquelas de tamanho word_length que forem aceitas
+     * 
+     * @param word_length tamanho das palavras a serem geradas
+     * @param print booleano indicando se deseja printar as palavras
+     * 
+     * @return HashSet de strings contendo as palavras geradas
+     */
+    public HashSet<String> getAllWordsByAccepting(int word_length, boolean print) {
+        HashSet<String> list_of_words = new HashSet<>();
         Set symbols = simbolos.getElementos();
 
         for (Iterator iter = symbols.iterator(); iter.hasNext();) {
             Simbolo s = (Simbolo) iter.next();
-            printAllWords_aux(s, word_length, "", list_of_words);
+            printAllWordsByAccepting_aux(s, word_length, "", list_of_words);
         }
         
-        System.out.println(list_of_words.size());
+        if (print) {
+            System.out.println(list_of_words.size());
 
-        for (Iterator iter = list_of_words.iterator(); iter.hasNext();) {
-            String s = (String) iter.next();
-            System.out.println(s);
+            for (Iterator iter = list_of_words.iterator(); iter.hasNext();) {
+                String s = (String) iter.next();
+                System.out.println(s);
+            }
         }
+        
+        return list_of_words;
     }
 
-    private void printAllWords_aux(Simbolo symbol, int word_length, String word, List<String> list_of_words) {
+    private void printAllWordsByAccepting_aux(Simbolo symbol, int word_length, String word, HashSet<String> list_of_words) {
 
         if (word.length() > word_length) {
             return;
         }
         if (word.length() == word_length && Aceita(word)) {
-
-            if (!list_of_words.contains(word)) {
-                list_of_words.add(word);
-            }
+            list_of_words.add(word);
             return;
         }
         word = word.concat(symbol.toString());
         Set symbols = simbolos.getElementos();
         for (Iterator iter = symbols.iterator(); iter.hasNext();) {
             symbol = (Simbolo) iter.next();
-            printAllWords_aux(symbol, word_length, word, list_of_words);
+            printAllWordsByAccepting_aux(symbol, word_length, word, list_of_words);
         }
 
     }
