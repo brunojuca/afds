@@ -1,46 +1,34 @@
 
 import afds.*;
-import java.util.Scanner;
+import java.util.HashSet;
 
 public class Principal {
 
-    public static void main(String[] args) {
-        Principal t = new Principal();
-        //t.faca1("ababa");
-        t.faca2();
-    }
-
-    /**
-     * Esse método lê o arquivo AFD.XML e imprime seu conteudo formatado.
-     *
-     * @param w
-     */
-    @SuppressWarnings("empty-statement")
-    public void faca1(String w) {
-        AFD a = new AFD();
-        try {
-            a.ler("./test/AFD.XML");
-            System.out.println("AFD M = " + a);
-            if (a.Aceita(w)) {
-                System.out.println("Aceitou " + w);
-            }
-            System.out.println("Pe(q0," + w + "):" + a.pe(a.getEstadoInicial(), w));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    public void faca2() {
+    public static void main(String[] args) {        
+        int n = 17;
+        
         AFN a = new AFN();
         try {
             a.ler("./test/AFN01.XML");
-            System.out.println("AFN M = " + a);
+            System.out.println("AFN M = " + a + "\n");       
+            System.out.println("Todas as palavras de tamanho " + n + " que a linguagem aceita\n");
             
-            Scanner reader = new Scanner(System.in);
-            System.out.print("Tamanho: ");
-            int n = reader.nextInt();
-            System.out.println("Todas as palavras de tamanho " + n + " que a linguagem aceita");
-            a.printAllWords(n);
+            long startTime = System.nanoTime();
+            HashSet<String> byTransition = a.getAllWordsByTransition(n, false); // o booleano indica que nao desejamos printar 
+            long byTransitionTime = System.nanoTime() - startTime;
+            startTime = System.nanoTime();
+            HashSet<String> byAccepting = a.getAllWordsByAccepting(n, false);
+            long byAcceptingTime = System.nanoTime() - startTime;
+            
+            System.out.println("Usando o metodo de transicoes:");
+            System.out.println("\t- Numero de palavras encontradas: " + byTransition.size());
+            System.out.println("\t- Tempo necessario: " + byTransitionTime/1000000 + "ms");
+            
+            System.out.println("");
+            
+            System.out.println("Usando o metodo de aceitacao:");
+            System.out.println("\t- Numero de palavras encontradas: " + byAccepting.size());
+            System.out.println("\t- Tempo necessario: " + byAcceptingTime/1000000 + "ms");
             
         } catch (Exception e) {
             System.out.println(e);
